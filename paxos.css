@@ -19,3 +19,18 @@ h1 {
 	height: 100px;
 	width: 100px;
 }
+
+.popover {
+  width: auto;
+}
+
+.popover-title {
+  text-transform: capitalize;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+td, th {
+  padding: 7px;
+  border: 1px solid #000;
+}
