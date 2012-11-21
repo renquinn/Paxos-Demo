@@ -1,15 +1,50 @@
 <html>
   <head>
     <title>Paxos Demo</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="paxos.css" />
   </head>
   <body>
-    <h1>Paxos Demo</h1>
-    <div class="node">Proposer</div>
-    <div class="node">Learner</div>
-    <div class="node">Acceptor</div>
-    <div class="message">Message</div>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <a class="brand" href="#">Paxos Demo</a>
+        <!--
+        <ul class="nav">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Link</a></li>
+          <li><a href="#">Link</a></li>
+        </ul>
+        -->
+      </div>
+    </div>
+    <div class="container-fluid span12 hero-unit">
+      <div class="row-fluid">
+        <div class="span4">
+          <h2>Proposers</h2>
+          <div class="node" data-type="proposer"></div>
+          <div class="node" data-type="proposer"></div>
+          <div class="node" data-type="proposer"></div>
+        </div>
+        <div class="span4">
+          <h2>Acceptors</h2>
+          <div class="node" data-type="acceptor"></div>
+          <div class="node" data-type="acceptor"></div>
+          <div class="node" data-type="acceptor"></div>
+        </div>
+        <div class="span4">
+          <h2>Learners</h2>
+          <div class="node" data-type="learner"></div>
+          <div class="node" data-type="learner"></div>
+          <div class="node" data-type="learner"></div>
+        </div>
+      </div>
+    </div>
+    <div class="well span3">
+      <h2>Message</h2>
+      <div class="message"></div>
+    </div>
     <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" language="javascript" src="bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" language="javascript" src="js/jquery.qtip.js"></script>
     <script type="text/javascript" language="javascript" src="paxos.js"></script>
   </body>
