@@ -1,4 +1,7 @@
 $(function() {
+  var node_width = 100;
+  var node_height = 100;
+  var TIME = 0;
   var script = [
     {
       "Phase": {
@@ -31,7 +34,37 @@ $(function() {
     },
   ];
 
-  $('pre#phase').text(script[0]['Phase']['Type']);
+var propose = function(replica, command) {
+  var proposer = {};
+  var acceptors = [];
+  $.each($('.node'), function() {
+    node = $(this);
+    if (node.data('type') == "proposer") {
+      if (node.data('replica') == replica) {
+        proposer = node.position();
+      }
+    } else if (node.data('type') == "acceptor") {
+      acceptors.push(node.position());
+    }
+  });
+  $.each(acceptors, function() {
+    $('<div />')
+      .addClass('message')
+      .css('left', (proposer.left + node_width))
+      .css('top',proposer.top)
+      .appendTo('#content')
+      .animate({ left: this.left, top: this.top }, 3000, function() {
+        $(this).remove();
+      });
+  });
+  console.log("Replica " + replica + " has proposed the value " + command + ".");
+}
+
+  $('pre#phase').text(script[TIME]['Phase']['Type']);
+
+  $('.send_message').click(function(event) {
+    propose($(this).data("replica"), "put a b");
+  });
 
   $('.node').popover({
     placement: 'bottom',
@@ -44,13 +77,13 @@ $(function() {
       if ($(this).data('type') == "proposer") {
         var database = $('<table />');
         database.append($('<tr />').append($('<th />').text('Key')).append($('<th />').text('Value')));
-        $.each(script[0]['Proposer']['Database'], function(key, value) {
+        $.each(script[TIME]['Proposer']['Database'], function(key, value) {
           database.append($('<tr />').append($('<td />').text(key)).append($('<td />').text(value)));
         });
 
         var slots = $('<table />');
         slots.append($('<tr />').append($('<th />').text('N')).append($('<th />').text('Command')));
-        $.each(script[0]['Proposer']['Slots'], function(key, value) {
+        $.each(script[TIME]['Proposer']['Slots'], function(key, value) {
           slots.append($('<tr />').append($('<td />').text(key+1)).append($('<td />').text(value)));
         });
 
@@ -62,7 +95,7 @@ $(function() {
           ).append($('<tr />')
             .append($('<td />').html(database))
             .append($('<td />').html(slots))
-            .append($('<td />').text(script[0]['Proposer']['Recent']))
+            .append($('<td />').text(script[TIME]['Proposer']['Recent']))
           ).html();
       } else {
         var table = $('<table />').append($('<tr />').append($('<th />').text('A'))).append($('<tr />').append($('<td />').text('B'))).html();
