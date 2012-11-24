@@ -37,3 +37,26 @@ td, th {
   border: 1px solid #000;
 }
   */
+#slider {
+  width:250px;
+  height:11px;
+  background: url(slider-bg.png);
+  position: absolute;
+  top: 15px;
+  right: 250px;
+}
+
+.ui-slider-handle {
+  width:24px;
+  height:24px;
+  position:absolute;
+  top:-7px;
+  margin-left:-12px;
+  z-index:200;
+  background: url(slider-button.png);
+}
+
+.ui-slider-handle:focus {
+  border: none;
+  outline: none;
+}
