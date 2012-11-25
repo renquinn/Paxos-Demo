@@ -8,7 +8,6 @@
     <div class="navbar">
       <div class="navbar-inner">
         <a class="brand" href="#">Paxos Demo</a>
-        <div id="slider"></div>
         <!--
         <ul class="nav">
           <li><a href="#">Home</a></li>
@@ -18,10 +17,18 @@
         -->
       </div>
     </div>
-    <div class="well span2">
-      <h3>Phase</h3>
-      <pre id="phase">
-      </pre>
+    <div class="container-fluid span3">
+      <div class="well">
+        <h2>Paxos</h2>
+        <p>Paxos is a collection of protocols...</p>
+        <p>Move the slider to watch Paxos in action!</p>
+        <div id="slider"></div>
+      </div>
+      <div class="well">
+        <h3>Phase</h3>
+        <pre id="phase"></pre>
+        <p id="description"></p>
+      </div>
     </div>
     <div id="content" class="container-fluid span12 hero-unit">
       <table class="table table-striped">
@@ -32,28 +39,24 @@
           <th><h2>Learners</h2></th>
         </tr>
         <tr>
-          <td><p>Replica 1</p><button data-replica="1" class="btn btn-primary send_message">Propose</button></td>
+          <td><p>Replica 1</p><button data-replica="1" title="Propose a value to initiate Paxos." class="btn btn-primary send_message">Propose</button></td>
           <td><div class="node" data-replica="1" data-type="proposer"></div></td>
           <td><div class="node" data-replica="1" data-type="acceptor"></div></td>
           <td><div class="node" data-replica="1" data-type="learner"></div></td>
         </tr>
         <tr>
-          <td><p>Replica 2</p><button data-replica="2" class="btn btn-primary send_message">Propose</button></td>
+          <td><p>Replica 2</p><button data-replica="2" title="Propose a value to initiate Paxos." class="btn btn-primary send_message">Propose</button></td>
           <td><div class="node" data-replica="2" data-type="proposer"></div></td>
           <td><div class="node" data-replica="2" data-type="acceptor"></div></td>
           <td><div class="node" data-replica="2" data-type="learner"></div></td>
         </tr>
         <tr>
-          <td><p>Replica 3</p><button data-replica="3" class="btn btn-primary send_message">Propose</button></td>
+          <td><p>Replica 3</p><button data-replica="3" title="Propose a value to initiate Paxos." class="btn btn-primary send_message">Propose</button></td>
           <td><div class="node" data-replica="3" data-type="proposer"></div></td>
           <td><div class="node" data-replica="3" data-type="acceptor"></div></td>
           <td><div class="node" data-replica="3" data-type="learner"></div></td>
         </tr>
       </table>
-    </div>
-    <div class="well span3">
-      <h2>Message</h2>
-      <div class="message"></div>
     </div>
     <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
     <script type="text/javascript" language="javascript" src="bootstrap/js/bootstrap.min.js"></script>

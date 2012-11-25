@@ -7,7 +7,7 @@ $(function() {
     animate: true,
     value: 0,
     min: 0,
-    max: 10,
+    max: 3,
     step: 1,
     slide: function(event, ui) {
       TIME = ui.value;
@@ -17,75 +17,145 @@ $(function() {
   });
   var script = [
     {
-      "Phase": {
-        "Type": "Prepare",
-        "Description": "A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors."
+      "phase": {
+        "type": "Prepare",
+        "description": 'A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors. Press "Propose" to propose the command "put key value".'
       },
-      "Proposer": {
-        "Database": {
-          "a": "b",
-          "go": "gopher"
-        },
-        "Slots": [
-          "Command1",
-          "Command2"
-        ],
-        "Recent": "Command3"
+      "database": {
+        "a": "b",
+        "go": "gopher"
       },
-      "Acceptor": {
+      "slots": [
+        "Command1",
+        "Command2"
+      ],
+      "proposer": {
+        "recent": "Command3",
+        "n": 1
       },
-      "Learner": {
+      "acceptor": {
+        "recent": "Command3",
+        "n": 1
+      },
+      "learner": {
       }
     },
     {
-      "Phase": {
-        "Type": "",
-        "Description": ""
+      "phase": {
+        "type": "Promise",
+        "description": "If the proposal's number N is higher..."
       },
-      "Proposer": {
-        "Database": {
-        },
-        "Slots": [
-        ],
-        "Recent": ""
+      "database": {
+        "a": "b",
+        "go": "gopher"
       },
-      "Acceptor": {
+      "slots": [
+        "Command1",
+        "Command2"
+      ],
+      "proposer": {
+        "recent": "Command3",
+        "n": 1
       },
-      "Learner": {
+      "acceptor": {
+        "recent": "Command3",
+        "n": 1
+      },
+      "learner": {
+      }
+    },
+    {
+      "phase": {
+        "type": "Accept",
+        "description": "If a Proposer receives enough promises from a Quorum of Acceptors..."
+      },
+      "database": {
+        "a": "b",
+        "go": "gopher"
+      },
+      "slots": [
+        "Command1",
+        "Command2"
+      ],
+      "proposer": {
+        "recent": "Command3",
+        "n": 1
+      },
+      "acceptor": {
+        "recent": "Command3",
+        "n": 1
+      },
+      "learner": {
+      }
+    },
+    {
+      "phase": {
+        "type": "Accepted",
+        "description": "If an Acceptor receives an Accept message for a proposal N..."
+      },
+      "database": {
+        "a": "b",
+        "go": "gopher"
+      },
+      "slots": [
+        "Command1",
+        "Command2"
+      ],
+      "proposer": {
+        "recent": "Command3",
+        "n": 1
+      },
+      "acceptor": {
+        "recent": "Command3",
+        "n": 1
+      },
+      "learner": {
       }
     },
   ];
-var reload = function() {
-  var propose = function(replica, command) {
-    var proposer = {};
-    var acceptors = [];
-    $.each($('.node'), function() {
-      node = $(this);
-      if (node.data('type') == "proposer") {
-        if (node.data('replica') == replica) {
-          proposer = node.position();
-        }
-      } else if (node.data('type') == "acceptor") {
-        acceptors.push(node.position());
-      }
-    });
-    $.each(acceptors, function() {
-      $('<div />')
-        .addClass('message')
-        .css('left', (proposer.left + node_width))
-        .css('top',proposer.top)
-        .appendTo('#content')
-        .animate({ left: this.left, top: this.top }, 3000, function() {
-          $(this).remove();
-        });
-    });
-    console.log("Replica " + replica + " has proposed the value " + command + ".");
-  }
 
-    $('pre#phase').text(script[TIME]['Phase']['Type']);
+  var reload = function() {
+    var propose = function(replica, command) {
+      var proposer = {};
+      var acceptors = [];
+      $.each($('.node'), function() {
+        node = $(this);
+        if (node.data('type') == "proposer") {
+          if (node.data('replica') == replica) {
+            proposer = node.position();
+          }
+        } else if (node.data('type') == "acceptor") {
+          acceptors.push(node.position());
+        }
+      });
+      $.each(acceptors, function() {
+        $('<div />')
+          .addClass('message')
+          .css('left', (proposer.left + node_width))
+          .css('top',proposer.top)
+          .appendTo('#content')
+          .animate({ left: this.left, top: this.top }, 3000, function() {
+            $(this).remove();
+          });
+      });
+      console.log("Replica " + replica + " has proposed the value " + command + ".");
+    }
+
+    var type = script[TIME]['phase']['type'];
+    var color = "muted";
+    console.log(type);
+    if (type == "Promise") {
+      color = "text-warning";
+    } else if (type == "Accept") {
+      color = "text-info";
+    } else if (type == "Accepted") {
+      color = "text-success";
+    }
+    $('#phase').text(type).attr('class', color);
+    $('#description').text(script[TIME]['phase']['description']);
 
     $('.send_message').click(function(event) {
-      propose($(this).data("replica"), "put a b");
+      propose($(this).data("replica"), "put key value");
     });
 
     $('.node').popover({
@@ -96,36 +166,36 @@ var reload = function() {
         return $(this).data('type');
       },
       content: function() {
-        if ($(this).data('type') == "proposer") {
-          var database = $('<table />');
-          database.append($('<tr />').append($('<th />').text('Key')).append($('<th />').text('Value')));
-          $.each(script[TIME]['Proposer']['Database'], function(key, value) {
-            database.append($('<tr />').append($('<td />').text(key)).append($('<td />').text(value)));
-          });
+        var database = $('<table />');
+        database.append($('<tr />').append($('<th />').text('Key')).append($('<th />').text('Value')));
+        $.each(script[TIME]['database'], function(key, value) {
+          database.append($('<tr />').append($('<td />').text(key)).append($('<td />').text(value)));
+        });
 
-          var slots = $('<table />');
-          slots.append($('<tr />').append($('<th />').text('N')).append($('<th />').text('Command')));
-          $.each(script[TIME]['Proposer']['Slots'], function(key, value) {
-            slots.append($('<tr />').append($('<td />').text(key+1)).append($('<td />').text(value)));
-          });
+        var slots = $('<table />');
+        slots.append($('<tr />').append($('<th />').text('#')).append($('<th />').text('Command')));
+        $.each(script[TIME]['slots'], function(key, value) {
+          slots.append($('<tr />').append($('<td />').text(key+1)).append($('<td />').text(value)));
+        });
 
-          var table = $('<table />')
-            .append($('<tr />')
-              .append($('<th />').text('Database'))
-              .append($('<th />').text('Slots'))
-              .append($('<th />').text('Recent'))
-            ).append($('<tr />')
-              .append($('<td />').html(database))
-              .append($('<td />').html(slots))
-              .append($('<td />').text(script[TIME]['Proposer']['Recent']))
-            ).html();
-        } else {
-          var table = $('<table />').append($('<tr />').append($('<th />').text('A'))).append($('<tr />').append($('<td />').text('B'))).html();
-        }
+        var table = $('<table />')
+          .append($('<tr />')
+            .append($('<th />').text('Database'))
+            .append($('<th />').text('Slots'))
+            .append($('<th />').text('Recent'))
+            .append($('<th />').text('N'))
+          ).append($('<tr />')
+            .append($('<td />').html(database))
+            .append($('<td />').html(slots))
+            .append($('<td />').text(script[TIME][$(this).data('type')]['recent']))
+            .append($('<td />').text(script[TIME][$(this).data('type')]['n']))
+          ).html();
+
         return table;
       }
-      //template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title">TITLE!!!!</h3><div class="popover-content"><p>CONTENT!</p></div></div></div>'
+        //template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title">TITLE!!!!</h3><div class="popover-content"><p>CONTENT!</p></div></div></div>'
     });
-};
-reload();
+  };
+
+  reload();
 });
