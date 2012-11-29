@@ -42,7 +42,7 @@ td, th {
 }
   */
 #slider {
-  background: url(slider-bg.png);
+  background: url(images/slider-bg.png);
   background-size: 100% 100%;
   width: 175px;
   height: 11px;
@@ -60,7 +60,7 @@ td, th {
   top: -7px;
   margin-left: -12px;
   z-index: 200;
-  background: url(slider-button.png);
+  background: url(images/slider-button.png);
 }
 
 .ui-slider-handle:focus {

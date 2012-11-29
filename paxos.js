@@ -1,20 +1,22 @@
 $(function() {
   var node_width = 100;
   var node_height = 100;
+  var ANIMATE_SPEED = 3000;
   var TIME = 0;
+
   // Controlling the script via slider
   $( "#slider" ).slider({
     animate: true,
-    value: 0,
+    value: TIME,
     min: 0,
     max: 3,
     step: 1,
     slide: function(event, ui) {
       TIME = ui.value;
-      console.log(TIME);
       reload();
     }
   });
+
   var script = [
     {
       "phase": {
@@ -114,36 +116,76 @@ $(function() {
     },
   ];
 
-  var reload = function() {
-    var propose = function(replica, command) {
-      var proposer = {};
-      var acceptors = [];
-      $.each($('.node'), function() {
-        node = $(this);
-        if (node.data('type') == "proposer") {
-          if (node.data('replica') == replica) {
-            proposer = node.position();
-          }
-        } else if (node.data('type') == "acceptor") {
-          acceptors.push(node.position());
-        }
-      });
-      $.each(acceptors, function() {
-        $('<div />')
-          .addClass('message')
-          .css('left', (proposer.left + node_width))
-          .css('top',proposer.top)
-          .appendTo('#content')
-          .animate({ left: this.left, top: this.top }, 3000, function() {
-            $(this).remove();
-          });
-      });
-      console.log("Replica " + replica + " has proposed the value " + command + ".");
+  var animation = function() {
+    if ($('#animate').is(':checked')) {
+      var type = script[TIME]['phase']['type'];
+      if (type == "Prepare") {
+        propose(1, 'insert alpha beta');
+      } else if (type == "Promise") {
+        promise(1, 'insert alpha beta');
+      } else if (type == "Accept") {
+      } else if (type == "Accepted") {
+      }
     }
+    setTimeout(function() {
+      animation();
+    }, ANIMATE_SPEED);
+  };
 
+  var propose = function(replica, command) {
+    var proposer = {};
+    var acceptors = [];
+    $.each($('.node'), function() {
+      node = $(this);
+      if (node.data('type') == "proposer") {
+        if (node.data('replica') == replica) {
+          proposer = node.position();
+        }
+      } else if (node.data('type') == "acceptor") {
+        acceptors.push(node.position());
+      }
+    });
+    $.each(acceptors, function() {
+      $('<div />')
+        .addClass('message')
+        .css('left', (proposer.left + node_width))
+        .css('top',proposer.top)
+        .appendTo('#content')
+        .animate({ left: this.left, top: this.top }, ANIMATE_SPEED, function() {
+          $(this).remove();
+        });
+    });
+    //console.log("Replica " + replica + " has proposed the value " + command + ".");
+  };
+
+  var promise = function(replica, command) {
+    var proposer = {};
+    var acceptors = [];
+    $.each($('.node'), function() {
+      node = $(this);
+      if (node.data('type') == "proposer") {
+        if (node.data('replica') == replica) {
+          proposer = node.position();
+        }
+      } else if (node.data('type') == "acceptor") {
+        acceptors.push(node.position());
+      }
+    });
+    $.each(acceptors, function() {
+      $('<div />')
+        .addClass('message')
+        .css('left', this.left)
+        .css('top', this.top)
+        .appendTo('#content')
+        .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
+          $(this).remove();
+        });
+    });
+  };
+
+  var reload = function() {
     var type = script[TIME]['phase']['type'];
     var color = "muted";
-    console.log(type);
     if (type == "Promise") {
       color = "text-warning";
     } else if (type == "Accept") {
@@ -197,5 +239,15 @@ $(function() {
     });
   };
 
+  $('.plus_time').click(function(event) {
+    //if (TIME == 0) {
+      //propose(1, 'insert alpha beta');
+    //}
+    TIME = (TIME+1)%4;
+    $( "#slider" ).slider('value', TIME);
+    reload();
+  });
+
   reload();
+  animation();
 });
