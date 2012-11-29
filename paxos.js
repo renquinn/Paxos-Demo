@@ -2,6 +2,7 @@ $(function() {
   var node_width = 100;
   var node_height = 100;
   var ANIMATE_SPEED = 3000;
+  var CONTINUOUS = false;
   var TIME = 0;
 
   // Controlling the script via slider
@@ -21,7 +22,7 @@ $(function() {
     {
       "phase": {
         "type": "Prepare",
-        "description": 'A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors. Press "Propose" to propose the command "put key value".'
+        "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors. Press "Propose" to propose the command "put key value".']
       },
       "database": {
         "a": "b",
@@ -45,7 +46,7 @@ $(function() {
     {
       "phase": {
         "type": "Promise",
-        "description": "If the proposal's number N is higher..."
+        "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."]
       },
       "database": {
         "a": "b",
@@ -69,7 +70,7 @@ $(function() {
     {
       "phase": {
         "type": "Accept",
-        "description": "If a Proposer receives enough promises from a Quorum of Acceptors..."
+        "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."]
       },
       "database": {
         "a": "b",
@@ -93,7 +94,7 @@ $(function() {
     {
       "phase": {
         "type": "Accepted",
-        "description": "If an Acceptor receives an Accept message for a proposal N..."
+        "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request.", "Rounds fail when multiple Proposers send conflicting Prepare messages, or when the Proposer does not receive a Quorum of responses (Promise or Accepted). In these cases, another round must be started with a higher proposal number.", "Notice that when Acceptors accept a request, they also acknowledge the leadership of the Proposer. Hence, Paxos can be used to select a leader in a cluster of nodes.", "Here is a graphic representation of the Basic Paxos protocol. Note that the values returned in the Promise message are null the first time a proposal is made, since no Acceptor has accepted a value before in this round."]
       },
       "database": {
         "a": "b",
@@ -184,6 +185,7 @@ $(function() {
   };
 
   var reload = function() {
+    // Load the phase type
     var type = script[TIME]['phase']['type'];
     var color = "muted";
     if (type == "Promise") {
@@ -194,10 +196,11 @@ $(function() {
       color = "text-success";
     }
     $('#phase').text(type).attr('class', color);
-    $('#description').text(script[TIME]['phase']['description']);
 
-    $('.send_message').click(function(event) {
-      propose($(this).data("replica"), "put key value");
+    // Load the description
+    $('#description').html('');
+    $.each(script[TIME]['phase']['description'], function(key, value) {
+      $('#description').append($('<p />').text(value));
     });
 
     $('.node').popover({
@@ -238,6 +241,10 @@ $(function() {
         //template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title">TITLE!!!!</h3><div class="popover-content"><p>CONTENT!</p></div></div></div>'
     });
   };
+
+  $('.send_message').click(function(event) {
+    propose($(this).data("replica"), "put key value");
+  });
 
   $('.plus_time').click(function(event) {
     //if (TIME == 0) {
