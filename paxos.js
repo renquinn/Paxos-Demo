@@ -1,10 +1,219 @@
 $(function() {
+  /*
+   * GLOBALS
+   */
   var node_width = 100;
   var node_height = 100;
   var ANIMATE_SPEED = 3000;
+  var LIFE_SPEED = 3000;
   var CONTINUOUS = false;
   var TIME = 0;
+  var SCRIPT =
+[
+  {
+    "phase": {
+      "type": "Prepare",
+      "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors']
+    },
+    "replicaData" : [
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "phase": {
+      "type": "Promise",
+      "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."]
+    },
+    "replicaData" : [
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "phase": {
+      "type": "Accept",
+      "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."]
+    },
+    "replicaData" : [
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "phase": {
+      "type": "Accepted",
+      "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."]
+    },
+    "replicaData" : [
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "n": 1
+      }
+    ]
+  },
+];
 
+/*
+  var SCRIPT;
+  var scenario = 'normal.json';
+  $.ajax({
+    url: scenario,
+    type: 'GET',
+    async: false,
+    dataType: 'json',
+    error: function(data) {
+      console.log(data);
+      SCRIPT = data.responseText;
+      console.log(SCRIPT);
+    }
+  });
+
+  console.log(SCRIPT);
+  //$.getJSON(scenario, function(data) {
+    //SCRIPT = $.parseJSON(data);
+    //console.log(data);
+    //SCRIPT = data;
+  //});
+*/
+
+  /*
+   * PLUGINS
+   */
   // Controlling the script via slider
   $( "#slider" ).slider({
     animate: true,
@@ -18,114 +227,32 @@ $(function() {
     }
   });
 
-  var script = [
-    {
-      "phase": {
-        "type": "Prepare",
-        "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors. Press "Propose" to propose the command "put key value".']
-      },
-      "database": {
-        "a": "b",
-        "go": "gopher"
-      },
-      "slots": [
-        "Command1",
-        "Command2"
-      ],
-      "proposer": {
-        "recent": "Command3",
-        "n": 1
-      },
-      "acceptor": {
-        "recent": "Command3",
-        "n": 1
-      },
-      "learner": {
-      }
-    },
-    {
-      "phase": {
-        "type": "Promise",
-        "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."]
-      },
-      "database": {
-        "a": "b",
-        "go": "gopher"
-      },
-      "slots": [
-        "Command1",
-        "Command2"
-      ],
-      "proposer": {
-        "recent": "Command3",
-        "n": 1
-      },
-      "acceptor": {
-        "recent": "Command3",
-        "n": 1
-      },
-      "learner": {
-      }
-    },
-    {
-      "phase": {
-        "type": "Accept",
-        "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."]
-      },
-      "database": {
-        "a": "b",
-        "go": "gopher"
-      },
-      "slots": [
-        "Command1",
-        "Command2"
-      ],
-      "proposer": {
-        "recent": "Command3",
-        "n": 1
-      },
-      "acceptor": {
-        "recent": "Command3",
-        "n": 1
-      },
-      "learner": {
-      }
-    },
-    {
-      "phase": {
-        "type": "Accepted",
-        "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request.", "Rounds fail when multiple Proposers send conflicting Prepare messages, or when the Proposer does not receive a Quorum of responses (Promise or Accepted). In these cases, another round must be started with a higher proposal number.", "Notice that when Acceptors accept a request, they also acknowledge the leadership of the Proposer. Hence, Paxos can be used to select a leader in a cluster of nodes.", "Here is a graphic representation of the Basic Paxos protocol. Note that the values returned in the Promise message are null the first time a proposal is made, since no Acceptor has accepted a value before in this round."]
-      },
-      "database": {
-        "a": "b",
-        "go": "gopher"
-      },
-      "slots": [
-        "Command1",
-        "Command2"
-      ],
-      "proposer": {
-        "recent": "Command3",
-        "n": 1
-      },
-      "acceptor": {
-        "recent": "Command3",
-        "n": 1
-      },
-      "learner": {
-      }
-    },
-  ];
+  /*
+   * FUNCTIONS
+   */
+  var life = function() {
+    if (TIME < 4) {
+      TIME = (TIME+1)%4;
+      $( "#slider" ).slider('value', TIME);
+      reload();
+
+      setTimeout(function() {
+        life();
+      }, LIFE_SPEED);
+    };
+  };
 
   var animation = function() {
     if ($('#animate').is(':checked')) {
-      var type = script[TIME]['phase']['type'];
+      var type = SCRIPT[TIME]['phase']['type'];
       if (type == "Prepare") {
-        propose(1, 'insert alpha beta');
+        propose(0, 'insert alpha beta');
       } else if (type == "Promise") {
-        promise(1, 'insert alpha beta');
+        promise(0, 'insert alpha beta');
       } else if (type == "Accept") {
+        accept(0, 'insert alpha beta');
       } else if (type == "Accepted") {
+        accepted(0, 'insert alpha beta');
       }
     }
     setTimeout(function() {
@@ -146,11 +273,13 @@ $(function() {
         acceptors.push(node.position());
       }
     });
-    $.each(acceptors, function() {
+    $.each(acceptors, function(key) {
       $('<div />')
         .addClass('message')
         .css('left', (proposer.left + node_width))
         .css('top',proposer.top)
+        .text(SCRIPT[TIME].replicaData[key].n)
+        //.addClass('text-error')
         .appendTo('#content')
         .animate({ left: this.left, top: this.top }, ANIMATE_SPEED, function() {
           $(this).remove();
@@ -184,9 +313,72 @@ $(function() {
     });
   };
 
+  var accept = function(replica, command) {
+    var proposer = {};
+    var acceptors = [];
+    $.each($('.node'), function() {
+      node = $(this);
+      if (node.data('type') == "proposer") {
+        if (node.data('replica') == replica) {
+          proposer = node.position();
+        }
+      } else if (node.data('type') == "acceptor") {
+        acceptors.push(node.position());
+      }
+    });
+    $.each(acceptors, function() {
+      $('<div />')
+        .addClass('message')
+        .css('left', (proposer.left + node_width))
+        .css('top',proposer.top)
+        .appendTo('#content')
+        .animate({ left: this.left, top: this.top }, ANIMATE_SPEED, function() {
+          $(this).remove();
+        });
+    });
+    //console.log("Replica " + replica + " has proposed the value " + command + ".");
+  };
+
+  var accepted = function(replica, command) {
+    var proposer = {};
+    var acceptors = [];
+    var learners = [];
+    $.each($('.node'), function() {
+      node = $(this);
+      if (node.data('type') == "proposer") {
+        if (node.data('replica') == replica) {
+          proposer = node.position();
+        }
+      } else if (node.data('type') == "acceptor") {
+        acceptors.push(node.position());
+      } else if (node.data('type') == "learner") {
+        learners.push(node.position());
+      }
+    });
+    $.each(acceptors, function() {
+      acceptor = this;
+      $('<div />')
+        .addClass('message')
+        .css('left', acceptor.left)
+        .css('top', acceptor.top)
+        .appendTo('#content')
+        .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
+          $(this).remove();
+        });
+      $('<div />')
+        .addClass('message')
+        .css('left', acceptor.left)
+        .css('top', acceptor.top)
+        .appendTo('#content')
+        .animate({ left: learners[0].left, top: acceptor.top }, ANIMATE_SPEED, function() {
+          $(this).remove();
+        });
+    });
+  };
+
   var reload = function() {
     // Load the phase type
-    var type = script[TIME]['phase']['type'];
+    var type = SCRIPT[TIME]['phase']['type'];
     var color = "muted";
     if (type == "Promise") {
       color = "text-warning";
@@ -199,7 +391,7 @@ $(function() {
 
     // Load the description
     $('#description').html('');
-    $.each(script[TIME]['phase']['description'], function(key, value) {
+    $.each(SCRIPT[TIME]['phase']['description'], function(key, value) {
       $('#description').append($('<p />').text(value));
     });
 
@@ -213,13 +405,13 @@ $(function() {
       content: function() {
         var database = $('<table />');
         database.append($('<tr />').append($('<th />').text('Key')).append($('<th />').text('Value')));
-        $.each(script[TIME]['database'], function(key, value) {
+        $.each(SCRIPT[TIME].replicaData[$(this).data('replica')].database, function(key, value) {
           database.append($('<tr />').append($('<td />').text(key)).append($('<td />').text(value)));
         });
 
         var slots = $('<table />');
         slots.append($('<tr />').append($('<th />').text('#')).append($('<th />').text('Command')));
-        $.each(script[TIME]['slots'], function(key, value) {
+        $.each(SCRIPT[TIME].replicaData[$(this).data('replica')].slots, function(key, value) {
           slots.append($('<tr />').append($('<td />').text(key+1)).append($('<td />').text(value)));
         });
 
@@ -232,8 +424,8 @@ $(function() {
           ).append($('<tr />')
             .append($('<td />').html(database))
             .append($('<td />').html(slots))
-            .append($('<td />').text(script[TIME][$(this).data('type')]['recent']))
-            .append($('<td />').text(script[TIME][$(this).data('type')]['n']))
+            .append($('<td />').text(SCRIPT[TIME].replicaData[$(this).data('replica')].recent))
+            .append($('<td />').text(SCRIPT[TIME].replicaData[$(this).data('replica')].n))
           ).html();
 
         return table;
@@ -242,17 +434,20 @@ $(function() {
     });
   };
 
-  $('.send_message').click(function(event) {
-    propose($(this).data("replica"), "put key value");
+  /*
+   * HANDLERS
+   */
+
+  $('#toggle-controls-body').click(function() {
+    $('#controls-body').toggle();
   });
 
-  $('.plus_time').click(function(event) {
-    //if (TIME == 0) {
-      //propose(1, 'insert alpha beta');
-    //}
-    TIME = (TIME+1)%4;
-    $( "#slider" ).slider('value', TIME);
-    reload();
+  $('#toggle-info-body').click(function() {
+    $('#info-body').toggle();
+  });
+
+  $('.send_message').click(function(event) {
+    life();
   });
 
   reload();
