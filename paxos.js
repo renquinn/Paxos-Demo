@@ -4,10 +4,11 @@ $(function() {
    */
   var node_width = 100;
   var node_height = 100;
-  var ANIMATE_SPEED = 3000;
-  var LIFE_SPEED = 3000;
+  var ANIMATE_SPEED = 2000;
+  var STEP_SPEED = 3000;
   var CONTINUOUS = false;
   var TIME = 0;
+  var PAUSE = true;
   var SCRIPT =
 [
   {
@@ -215,7 +216,7 @@ $(function() {
    * PLUGINS
    */
   // Controlling the script via slider
-  $( "#slider" ).slider({
+  $( "#step" ).slider({
     animate: true,
     value: TIME,
     min: 0,
@@ -227,19 +228,41 @@ $(function() {
     }
   });
 
+  $( "#step-speed" ).slider({
+    animate: true,
+    value: STEP_SPEED,
+    min: 0,
+    max: 10000,
+    step: 100,
+    slide: function(event, ui) {
+      STEP_SPEED = ui.value;
+    }
+  });
+
+  $( "#animation-speed" ).slider({
+    animate: true,
+    value: ANIMATE_SPEED,
+    min: 0,
+    max: 5000,
+    step: 100,
+    slide: function(event, ui) {
+      ANIMATE_SPEED = ui.value;
+    }
+  });
+
   /*
    * FUNCTIONS
    */
   var life = function() {
-    if (TIME < 4) {
+    if (!PAUSE) {
       TIME = (TIME+1)%4;
-      $( "#slider" ).slider('value', TIME);
+      $( "#step" ).slider('value', TIME);
       reload();
-
-      setTimeout(function() {
-        life();
-      }, LIFE_SPEED);
     };
+
+    setTimeout(function() {
+      life();
+    }, STEP_SPEED);
   };
 
   var animation = function() {
@@ -446,10 +469,17 @@ $(function() {
     $('#info-body').toggle();
   });
 
-  $('.send_message').click(function(event) {
-    life();
+  $('.play-pause').click(function(event) {
+    PAUSE = !PAUSE;
+  });
+
+  $('.next-step').click(function(event) {
+    TIME = (TIME+1)%4;
+    $( "#step" ).slider('value', TIME);
+    reload();
   });
 
   reload();
   animation();
+  life();
 });

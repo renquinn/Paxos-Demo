@@ -11,6 +11,10 @@
         <a class="brand" href="#">Paxos Demo</a>
         <ul class="nav pull-right">
           <li class="divider-vertical"></li>
+          <li><button data-replica="1" class="btn btn-primary play-pause">Play/Pause</button></li>
+          <li class="divider-vertical"></li>
+          <li><button data-replica="1" class="btn btn-primary next-step">&gt;&gt;</button></li>
+          <li class="divider-vertical"></li>
           <li><button class="btn btn-success" id="toggle-controls-body">Toggle Controls</button></li>
           <li class="divider-vertical"></li>
           <li><button class="btn btn-warning" id="toggle-info-body">Toggle Descriptions</button></li>
@@ -23,11 +27,16 @@
       <div class="container-fluid span3">
         <div id="controls-body" class="well">
           <h3>Controls</h3>
-            <label>Timeline</label>
-            <div id="slider"></div><br>
             <label>Animate?<br><input id="animate" type="checkbox" /></label>
-            <label>Command <input class="input-medium" type="text" placeholder="ex. insert key value" id="command" /></label>
-            <button data-replica="1" title="Propose a value to initiate Paxos." class="btn btn-primary send_message">Propose</button>
+            <!-- <label>Command <input class="input-medium" type="text" placeholder="ex. insert key value" id="command" /></label> -->
+            <label>Animation Speed</label>
+            <div id="animation-speed" class="slider"></div><br><br>
+            <label>Step Speed</label>
+            <div id="step-speed" class="slider"></div><br><br>
+            <label>Timeline</label>
+            <div id="step" class="slider"></div><br><br>
+            <button data-replica="1" class="btn btn-primary play-pause">Play/Pause</button>
+            <button data-replica="1" class="btn btn-primary next-step">&gt;&gt;</button>
         </div>
         <div id="info-body" class="well">
           <h3>Phase</h3>
