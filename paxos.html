@@ -11,6 +11,8 @@
         <a class="brand" href="#">Paxos Demo</a>
         <ul class="nav pull-right">
           <li class="divider-vertical"></li>
+          <li><button data-replica="1" class="btn btn-primary previous-step">&lt;&lt;</button></li>
+          <li class="divider-vertical"></li>
           <li><button data-replica="1" class="btn btn-primary play-pause">Play/Pause</button></li>
           <li class="divider-vertical"></li>
           <li><button data-replica="1" class="btn btn-primary next-step">&gt;&gt;</button></li>
@@ -35,8 +37,9 @@
             <div id="step-speed" class="slider"></div><br><br>
             <label>Timeline</label>
             <div id="step" class="slider"></div><br><br>
+            <button data-replica="1" class="btn btn-small previous-step">&lt;&lt;</button>
             <button data-replica="1" class="btn btn-primary play-pause">Play/Pause</button>
-            <button data-replica="1" class="btn btn-primary next-step">&gt;&gt;</button>
+            <button data-replica="1" class="btn btn-small next-step">&gt;&gt;</button>
         </div>
         <div id="info-body" class="well">
           <h3>Phase</h3>
@@ -57,20 +60,20 @@
           <tr>
             <td><p>Replica 1</p></td>
             <td><div class="node" data-replica="0" data-type="proposer"></div></td>
-            <td><div class="node" data-replica="1" data-type="acceptor"></div></td>
-            <td><div class="node" data-replica="2" data-type="learner"></div></td>
+            <td><div class="node" data-replica="0" data-type="acceptor"></div></td>
+            <td><div class="node" data-replica="0" data-type="learner"></div></td>
           </tr>
           <tr>
             <td><p>Replica 2</p></td>
-            <td><div class="node" data-replica="2" data-type="proposer"></div></td>
-            <td><div class="node" data-replica="2" data-type="acceptor"></div></td>
-            <td><div class="node" data-replica="2" data-type="learner"></div></td>
+            <td><div class="node" data-replica="1" data-type="proposer"></div></td>
+            <td><div class="node" data-replica="1" data-type="acceptor"></div></td>
+            <td><div class="node" data-replica="1" data-type="learner"></div></td>
           </tr>
           <tr>
             <td><p>Replica 3</p></td>
-            <td><div class="node" data-replica="3" data-type="proposer"></div></td>
-            <td><div class="node" data-replica="3" data-type="acceptor"></div></td>
-            <td><div class="node" data-replica="3" data-type="learner"></div></td>
+            <td><div class="node" data-replica="2" data-type="proposer"></div></td>
+            <td><div class="node" data-replica="2" data-type="acceptor"></div></td>
+            <td><div class="node" data-replica="2" data-type="learner"></div></td>
           </tr>
         </table>
       </div>

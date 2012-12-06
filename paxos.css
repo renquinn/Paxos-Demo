@@ -14,6 +14,16 @@ label {
 	margin-top: 5px;
 }
 
+.btn-small {
+  background: #006dcc;
+  color: #fff;
+}
+
+.btn-small:hover {
+  background: #04c;
+  color: #fff;
+}
+
 .node {
 	background-image: url('images/node.png');
 	background-size: 100% 100%;
@@ -27,12 +37,24 @@ label {
 	height: 100px;
 	width: 100px;
 	position: absolute;
-	font-size: 4em;
+	font-size: 2em;
 	font-family: 'Lucida Console', Monaco, monospace;
 	line-height: 1.25em;
+  /*
+	font-size: 4em;
 	text-shadow: 1px 3px 5px #000;
+  */
 	text-align: center;
 	vertical-align: text-middle;
+}
+
+.message p.value {
+  background: #fff;
+  margin-top: 20px;
+  line-height: 1em;
+	font-size: .5em;
+  color: #000;
+  border-radius: 5px;
 }
 
 .popover {

@@ -27,7 +27,8 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
-        "n": 1
+        "n": 1,
+        "value": "put key value"
       },
       {
         "database": {
@@ -152,37 +153,43 @@ $(function() {
       {
         "database": {
           "a": "b",
-          "go": "gopher"
+          "go": "gopher",
+          "key": "value"
         },
         "slots": [
           "put a b",
-          "put go gopher"
+          "put go gopher",
+          "put key value"
         ],
-        "recent": "put go gopher",
+        "recent": "put key value",
         "n": 1
       },
       {
         "database": {
           "a": "b",
-          "go": "gopher"
+          "go": "gopher",
+          "key": "value"
         },
         "slots": [
           "put a b",
-          "put go gopher"
+          "put go gopher",
+          "put key value"
         ],
-        "recent": "put go gopher",
+        "recent": "put key value",
         "n": 1
       },
       {
         "database": {
           "a": "b",
-          "go": "gopher"
+          "go": "gopher",
+          "key": "value"
         },
         "slots": [
           "put a b",
-          "put go gopher"
+          "put go gopher",
+          "put key value"
         ],
-        "recent": "put go gopher",
+        "recent": "put key value",
         "n": 1
       }
     ]
@@ -269,13 +276,13 @@ $(function() {
     if ($('#animate').is(':checked')) {
       var type = SCRIPT[TIME]['phase']['type'];
       if (type == "Prepare") {
-        propose(0, 'insert alpha beta');
+        propose(0);
       } else if (type == "Promise") {
-        promise(0, 'insert alpha beta');
+        promise(0);
       } else if (type == "Accept") {
-        accept(0, 'insert alpha beta');
+        accept(0);
       } else if (type == "Accepted") {
-        accepted(0, 'insert alpha beta');
+        accepted(0);
       }
     }
     setTimeout(function() {
@@ -283,26 +290,29 @@ $(function() {
     }, ANIMATE_SPEED);
   };
 
-  var propose = function(replica, command) {
+  var propose = function(replica) {
     var proposer = {};
+    var proposerId;
     var acceptors = [];
     $.each($('.node'), function() {
       node = $(this);
       if (node.data('type') == "proposer") {
         if (node.data('replica') == replica) {
           proposer = node.position();
+          proposerId = node.data('replica');
         }
       } else if (node.data('type') == "acceptor") {
         acceptors.push(node.position());
       }
     });
-    $.each(acceptors, function(key) {
+    $.each(acceptors, function(replica) {
+      textClass = 'text'; //TODO: Determine if it is accepted or rejected (text-success or text-error)
       $('<div />')
         .addClass('message')
         .css('left', (proposer.left + node_width))
         .css('top',proposer.top)
-        .text(SCRIPT[TIME].replicaData[key].n)
-        //.addClass('text-error')
+        .html("<p>" + SCRIPT[TIME].replicaData[proposerId].n + "</p><p class='value'>" + SCRIPT[TIME].replicaData[proposerId].value + "</p>")
+        .addClass(textClass)
         .appendTo('#content')
         .animate({ left: this.left, top: this.top }, ANIMATE_SPEED, function() {
           $(this).remove();
@@ -311,24 +321,29 @@ $(function() {
     //console.log("Replica " + replica + " has proposed the value " + command + ".");
   };
 
-  var promise = function(replica, command) {
+  var promise = function(replica) {
     var proposer = {};
+    var proposerId;
     var acceptors = [];
     $.each($('.node'), function() {
       node = $(this);
       if (node.data('type') == "proposer") {
         if (node.data('replica') == replica) {
           proposer = node.position();
+          proposerId = node.data('replica');
         }
       } else if (node.data('type') == "acceptor") {
         acceptors.push(node.position());
       }
     });
-    $.each(acceptors, function() {
+    $.each(acceptors, function(replica) {
+      textClass = 'text-success'; //TODO: Determine if it is accepted or rejected (text-success or text-error)
       $('<div />')
         .addClass('message')
         .css('left', this.left)
         .css('top', this.top)
+        .html("<p>" + SCRIPT[TIME].replicaData[proposerId].n + "</p><p class='value'>" + SCRIPT[TIME].replicaData[proposerId].value + "</p>")
+        .addClass(textClass)
         .appendTo('#content')
         .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
           $(this).remove();
@@ -336,7 +351,7 @@ $(function() {
     });
   };
 
-  var accept = function(replica, command) {
+  var accept = function(replica) {
     var proposer = {};
     var acceptors = [];
     $.each($('.node'), function() {
@@ -349,11 +364,14 @@ $(function() {
         acceptors.push(node.position());
       }
     });
-    $.each(acceptors, function() {
+    $.each(acceptors, function(replica) {
+      textClass = 'text-success'; //TODO: Determine if it is accepted or rejected (text-success or text-error)
       $('<div />')
         .addClass('message')
         .css('left', (proposer.left + node_width))
         .css('top',proposer.top)
+        .text(SCRIPT[TIME].replicaData[replica].n)
+        .addClass(textClass)
         .appendTo('#content')
         .animate({ left: this.left, top: this.top }, ANIMATE_SPEED, function() {
           $(this).remove();
@@ -362,7 +380,7 @@ $(function() {
     //console.log("Replica " + replica + " has proposed the value " + command + ".");
   };
 
-  var accepted = function(replica, command) {
+  var accepted = function(replica) {
     var proposer = {};
     var acceptors = [];
     var learners = [];
@@ -378,12 +396,15 @@ $(function() {
         learners.push(node.position());
       }
     });
-    $.each(acceptors, function() {
+    $.each(acceptors, function(replica) {
+      textClass = 'text-success'; //TODO: Determine if it is accepted or rejected (text-success or text-error)
       acceptor = this;
       $('<div />')
         .addClass('message')
         .css('left', acceptor.left)
         .css('top', acceptor.top)
+        .text(SCRIPT[TIME].replicaData[replica].n)
+        .addClass(textClass)
         .appendTo('#content')
         .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
           $(this).remove();
@@ -392,6 +413,8 @@ $(function() {
         .addClass('message')
         .css('left', acceptor.left)
         .css('top', acceptor.top)
+        .text(SCRIPT[TIME].replicaData[replica].n)
+        .addClass(textClass)
         .appendTo('#content')
         .animate({ left: learners[0].left, top: acceptor.top }, ANIMATE_SPEED, function() {
           $(this).remove();
@@ -475,6 +498,12 @@ $(function() {
 
   $('.next-step').click(function(event) {
     TIME = (TIME+1)%4;
+    $( "#step" ).slider('value', TIME);
+    reload();
+  });
+
+  $('.previous-step').click(function(event) {
+    TIME = (TIME+3)%4;
     $( "#step" ).slider('value', TIME);
     reload();
   });
