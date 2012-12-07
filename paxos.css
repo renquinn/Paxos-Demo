@@ -6,6 +6,10 @@ h1 {
 	color: #00f;
 }
 
+h2#title {
+	margin: -10px 0 20px 0;
+}
+
 pre {
 	font-size: 1.25em;
 }
