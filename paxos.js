@@ -27,19 +27,8 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
-        "n": 1,
-        "value": "put key value"
-      },
-      {
-        "database": {
-          "a": "b",
-          "go": "gopher"
-        },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
+        "value": "put key value",
+        "status": "success",
         "n": 1
       },
       {
@@ -52,6 +41,22 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
+        "value": "",
+        "status": "success",
+        "n": 1
+      },
+      {
+        "database": {
+          "a": "b",
+          "go": "gopher"
+        },
+        "slots": [
+          "put a b",
+          "put go gopher"
+        ],
+        "recent": "put go gopher",
+        "value": "",
+        "status": "success",
         "n": 1
       }
     ]
@@ -72,6 +77,8 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
+        "value": "",
+        "status": "success",
         "n": 1
       },
       {
@@ -84,6 +91,8 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
+        "value": "",
+        "status": "success",
         "n": 1
       },
       {
@@ -96,6 +105,8 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
+        "value": "",
+        "status": "success",
         "n": 1
       }
     ]
@@ -116,6 +127,8 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
+        "value": "put key value",
+        "status": "success",
         "n": 1
       },
       {
@@ -128,6 +141,8 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
+        "value": "put key value",
+        "status": "success",
         "n": 1
       },
       {
@@ -140,6 +155,8 @@ $(function() {
           "put go gopher"
         ],
         "recent": "put go gopher",
+        "value": "put key value",
+        "status": "success",
         "n": 1
       }
     ]
@@ -162,6 +179,8 @@ $(function() {
           "put key value"
         ],
         "recent": "put key value",
+        "value": "put key value",
+        "status": "success",
         "n": 1
       },
       {
@@ -176,6 +195,8 @@ $(function() {
           "put key value"
         ],
         "recent": "put key value",
+        "value": "put key value",
+        "status": "success",
         "n": 1
       },
       {
@@ -190,6 +211,8 @@ $(function() {
           "put key value"
         ],
         "recent": "put key value",
+        "value": "put key value",
+        "status": "success",
         "n": 1
       }
     ]
@@ -306,7 +329,7 @@ $(function() {
       }
     });
     $.each(acceptors, function(replica) {
-      textClass = 'text'; //TODO: Determine if it is accepted or rejected (text-success or text-error)
+      textClass = 'text';
       $('<div />')
         .addClass('message')
         .css('left', (proposer.left + node_width))
@@ -337,12 +360,17 @@ $(function() {
       }
     });
     $.each(acceptors, function(replica) {
-      textClass = 'text-success'; //TODO: Determine if it is accepted or rejected (text-success or text-error)
+      textClass = 'text';
+      if (SCRIPT[TIME].replicaData[replica].status == "success") {
+        textClass = 'text-success';
+      } else if (SCRIPT[TIME].replicaData[replica].status == "error") {
+        textClass = 'text-error';
+      }
       $('<div />')
         .addClass('message')
         .css('left', this.left)
         .css('top', this.top)
-        .html("<p>" + SCRIPT[TIME].replicaData[proposerId].n + "</p><p class='value'>" + SCRIPT[TIME].replicaData[proposerId].value + "</p>")
+        .html("<p>" + SCRIPT[TIME].replicaData[replica].n + "</p><p class='value'>" + SCRIPT[TIME].replicaData[replica].value + "</p>")
         .addClass(textClass)
         .appendTo('#content')
         .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
@@ -365,12 +393,12 @@ $(function() {
       }
     });
     $.each(acceptors, function(replica) {
-      textClass = 'text-success'; //TODO: Determine if it is accepted or rejected (text-success or text-error)
+      textClass = 'text';
       $('<div />')
         .addClass('message')
         .css('left', (proposer.left + node_width))
         .css('top',proposer.top)
-        .text(SCRIPT[TIME].replicaData[replica].n)
+        .html('<p>' + SCRIPT[TIME].replicaData[replica].n + '</p><p class="value">' + SCRIPT[TIME].replicaData[replica].value + '</p>')
         .addClass(textClass)
         .appendTo('#content')
         .animate({ left: this.left, top: this.top }, ANIMATE_SPEED, function() {
@@ -397,7 +425,7 @@ $(function() {
       }
     });
     $.each(acceptors, function(replica) {
-      textClass = 'text-success'; //TODO: Determine if it is accepted or rejected (text-success or text-error)
+      textClass = 'text-success';
       acceptor = this;
       $('<div />')
         .addClass('message')
@@ -409,14 +437,15 @@ $(function() {
         .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
           $(this).remove();
         });
+      // TODO: Sending a learner message should be conditional
       $('<div />')
         .addClass('message')
         .css('left', acceptor.left)
         .css('top', acceptor.top)
-        .text(SCRIPT[TIME].replicaData[replica].n)
+        .html('<p>' + SCRIPT[TIME].replicaData[replica].n + '</p><p class="value">' + SCRIPT[TIME].replicaData[replica].value + '</p>')
         .addClass(textClass)
         .appendTo('#content')
-        .animate({ left: learners[0].left, top: acceptor.top }, ANIMATE_SPEED, function() {
+        .animate({ left: learners[0].left }, ANIMATE_SPEED, function() {
           $(this).remove();
         });
     });
