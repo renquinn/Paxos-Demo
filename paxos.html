@@ -29,6 +29,11 @@
       <div class="container-fluid span3">
         <div id="controls-body" class="well">
           <h3>Controls</h3>
+            <label>Example Case</label>
+            <select class="input-medium" id="example-case">
+              <option value="basic">Basic Paxos</option>
+              <option value="acceptor-failure">Acceptor Failure</option>
+            </select>
             <label>Animate?<br><input id="animate" type="checkbox" /></label>
             <!-- <label>Command <input class="input-medium" type="text" placeholder="ex. insert key value" id="command" /></label> -->
             <label>Animation Speed</label>
@@ -50,6 +55,7 @@
 
       <!-- DIAGRAM -->
       <div id="content" class="container-fluid span12 hero-unit">
+        <h2 id="title"></h2>
         <table class="table table-striped">
           <tr>
             <th></th>

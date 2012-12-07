@@ -9,215 +9,438 @@ $(function() {
   var CONTINUOUS = false;
   var TIME = 0;
   var PAUSE = true;
-  var SCRIPT =
-[
+
+  // FAILURE OF AN ACCEPTOR
+  var ACCEPTOR_FAILURE =
   {
-    "phase": {
-      "type": "Prepare",
-      "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors']
-    },
-    "replicaData" : [
+    "title": "Failure of an Acceptor",
+    "data" :
+    [
       {
-        "database": {
-          "a": "b",
-          "go": "gopher"
+        "phase": {
+          "type": "Prepare",
+          "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors']
         },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "put key value",
-        "status": "success",
-        "n": 1
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          }
+        ]
       },
       {
-        "database": {
-          "a": "b",
-          "go": "gopher"
+        "phase": {
+          "type": "Promise",
+          "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.",
+                          " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N.",
+                          "The simplest error cases are the failure of a redundant Learner, or failure of an Acceptor when a Quorum of Acceptors remains live. In these cases, the protocol requires no recovery. No additional rounds or messages are required"]
         },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "",
-        "status": "success",
-        "n": 1
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "fail",
+            "n": 1
+          }
+        ]
       },
       {
-        "database": {
-          "a": "b",
-          "go": "gopher"
+        "phase": {
+          "type": "Accept",
+          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."]
         },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "",
-        "status": "success",
-        "n": 1
-      }
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "phase": {
+          "type": "Accepted",
+          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."]
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
     ]
-  },
+  };
+
+  var BASIC =
   {
-    "phase": {
-      "type": "Promise",
-      "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."]
-    },
-    "replicaData" : [
+    "title": "Basic Paxos",
+    "data":
+    [
       {
-        "database": {
-          "a": "b",
-          "go": "gopher"
+        "phase": {
+          "type": "Prepare",
+          "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors']
         },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "",
-        "status": "success",
-        "n": 1
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          }
+        ]
       },
       {
-        "database": {
-          "a": "b",
-          "go": "gopher"
+        "phase": {
+          "type": "Promise",
+          "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."]
         },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "",
-        "status": "success",
-        "n": 1
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          }
+        ]
       },
       {
-        "database": {
-          "a": "b",
-          "go": "gopher"
+        "phase": {
+          "type": "Accept",
+          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."]
         },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "",
-        "status": "success",
-        "n": 1
-      }
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "phase": {
+          "type": "Accepted",
+          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."]
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
     ]
-  },
-  {
-    "phase": {
-      "type": "Accept",
-      "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."]
-    },
-    "replicaData" : [
-      {
-        "database": {
-          "a": "b",
-          "go": "gopher"
-        },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "put key value",
-        "status": "success",
-        "n": 1
-      },
-      {
-        "database": {
-          "a": "b",
-          "go": "gopher"
-        },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "put key value",
-        "status": "success",
-        "n": 1
-      },
-      {
-        "database": {
-          "a": "b",
-          "go": "gopher"
-        },
-        "slots": [
-          "put a b",
-          "put go gopher"
-        ],
-        "recent": "put go gopher",
-        "value": "put key value",
-        "status": "success",
-        "n": 1
-      }
-    ]
-  },
-  {
-    "phase": {
-      "type": "Accepted",
-      "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."]
-    },
-    "replicaData" : [
-      {
-        "database": {
-          "a": "b",
-          "go": "gopher",
-          "key": "value"
-        },
-        "slots": [
-          "put a b",
-          "put go gopher",
-          "put key value"
-        ],
-        "recent": "put key value",
-        "value": "put key value",
-        "status": "success",
-        "n": 1
-      },
-      {
-        "database": {
-          "a": "b",
-          "go": "gopher",
-          "key": "value"
-        },
-        "slots": [
-          "put a b",
-          "put go gopher",
-          "put key value"
-        ],
-        "recent": "put key value",
-        "value": "put key value",
-        "status": "success",
-        "n": 1
-      },
-      {
-        "database": {
-          "a": "b",
-          "go": "gopher",
-          "key": "value"
-        },
-        "slots": [
-          "put a b",
-          "put go gopher",
-          "put key value"
-        ],
-        "recent": "put key value",
-        "value": "put key value",
-        "status": "success",
-        "n": 1
-      }
-    ]
-  },
-];
+  };
+var SCRIPT = BASIC;
 
 /*
   var SCRIPT;
@@ -297,7 +520,7 @@ $(function() {
 
   var animation = function() {
     if ($('#animate').is(':checked')) {
-      var type = SCRIPT[TIME]['phase']['type'];
+      var type = SCRIPT.data[TIME]['phase']['type'];
       if (type == "Prepare") {
         propose(0);
       } else if (type == "Promise") {
@@ -334,7 +557,7 @@ $(function() {
         .addClass('message')
         .css('left', (proposer.left + node_width))
         .css('top',proposer.top)
-        .html("<p>" + SCRIPT[TIME].replicaData[proposerId].n + "</p><p class='value'>" + SCRIPT[TIME].replicaData[proposerId].value + "</p>")
+        .html("<p>" + SCRIPT.data[TIME].replicaData[proposerId].n + "</p><p class='value'>" + SCRIPT.data[TIME].replicaData[proposerId].value + "</p>")
         .addClass(textClass)
         .appendTo('#content')
         .animate({ left: this.left, top: this.top }, ANIMATE_SPEED, function() {
@@ -360,22 +583,24 @@ $(function() {
       }
     });
     $.each(acceptors, function(replica) {
-      textClass = 'text';
-      if (SCRIPT[TIME].replicaData[replica].status == "success") {
-        textClass = 'text-success';
-      } else if (SCRIPT[TIME].replicaData[replica].status == "error") {
-        textClass = 'text-error';
+      if (SCRIPT.data[TIME].replicaData[replica].status != "fail") {
+        textClass = 'text';
+        if (SCRIPT.data[TIME].replicaData[replica].status == "success") {
+          textClass = 'text-success';
+        } else if (SCRIPT.data[TIME].replicaData[replica].status == "error") {
+          textClass = 'text-error';
+        }
+        $('<div />')
+          .addClass('message')
+          .css('left', this.left)
+          .css('top', this.top)
+          .html("<p>" + SCRIPT.data[TIME].replicaData[replica].n + "</p><p class='value'>" + SCRIPT.data[TIME].replicaData[replica].value + "</p>")
+          .addClass(textClass)
+          .appendTo('#content')
+          .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
+            $(this).remove();
+          });
       }
-      $('<div />')
-        .addClass('message')
-        .css('left', this.left)
-        .css('top', this.top)
-        .html("<p>" + SCRIPT[TIME].replicaData[replica].n + "</p><p class='value'>" + SCRIPT[TIME].replicaData[replica].value + "</p>")
-        .addClass(textClass)
-        .appendTo('#content')
-        .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
-          $(this).remove();
-        });
     });
   };
 
@@ -398,7 +623,7 @@ $(function() {
         .addClass('message')
         .css('left', (proposer.left + node_width))
         .css('top',proposer.top)
-        .html('<p>' + SCRIPT[TIME].replicaData[replica].n + '</p><p class="value">' + SCRIPT[TIME].replicaData[replica].value + '</p>')
+        .html('<p>' + SCRIPT.data[TIME].replicaData[replica].n + '</p><p class="value">' + SCRIPT.data[TIME].replicaData[replica].value + '</p>')
         .addClass(textClass)
         .appendTo('#content')
         .animate({ left: this.left, top: this.top }, ANIMATE_SPEED, function() {
@@ -431,7 +656,7 @@ $(function() {
         .addClass('message')
         .css('left', acceptor.left)
         .css('top', acceptor.top)
-        .text(SCRIPT[TIME].replicaData[replica].n)
+        .text(SCRIPT.data[TIME].replicaData[replica].n)
         .addClass(textClass)
         .appendTo('#content')
         .animate({ left: proposer.left, top: proposer.top }, ANIMATE_SPEED, function() {
@@ -442,7 +667,7 @@ $(function() {
         .addClass('message')
         .css('left', acceptor.left)
         .css('top', acceptor.top)
-        .html('<p>' + SCRIPT[TIME].replicaData[replica].n + '</p><p class="value">' + SCRIPT[TIME].replicaData[replica].value + '</p>')
+        .html('<p>' + SCRIPT.data[TIME].replicaData[replica].n + '</p><p class="value">' + SCRIPT.data[TIME].replicaData[replica].value + '</p>')
         .addClass(textClass)
         .appendTo('#content')
         .animate({ left: learners[0].left }, ANIMATE_SPEED, function() {
@@ -453,7 +678,7 @@ $(function() {
 
   var reload = function() {
     // Load the phase type
-    var type = SCRIPT[TIME]['phase']['type'];
+    var type = SCRIPT.data[TIME]['phase']['type'];
     var color = "muted";
     if (type == "Promise") {
       color = "text-warning";
@@ -465,8 +690,9 @@ $(function() {
     $('#phase').text(type).attr('class', color);
 
     // Load the description
+    $('#title').text(SCRIPT.title);
     $('#description').html('');
-    $.each(SCRIPT[TIME]['phase']['description'], function(key, value) {
+    $.each(SCRIPT.data[TIME]['phase']['description'], function(key, value) {
       $('#description').append($('<p />').text(value));
     });
 
@@ -480,13 +706,13 @@ $(function() {
       content: function() {
         var database = $('<table />');
         database.append($('<tr />').append($('<th />').text('Key')).append($('<th />').text('Value')));
-        $.each(SCRIPT[TIME].replicaData[$(this).data('replica')].database, function(key, value) {
+        $.each(SCRIPT.data[TIME].replicaData[$(this).data('replica')].database, function(key, value) {
           database.append($('<tr />').append($('<td />').text(key)).append($('<td />').text(value)));
         });
 
         var slots = $('<table />');
         slots.append($('<tr />').append($('<th />').text('#')).append($('<th />').text('Command')));
-        $.each(SCRIPT[TIME].replicaData[$(this).data('replica')].slots, function(key, value) {
+        $.each(SCRIPT.data[TIME].replicaData[$(this).data('replica')].slots, function(key, value) {
           slots.append($('<tr />').append($('<td />').text(key+1)).append($('<td />').text(value)));
         });
 
@@ -499,8 +725,8 @@ $(function() {
           ).append($('<tr />')
             .append($('<td />').html(database))
             .append($('<td />').html(slots))
-            .append($('<td />').text(SCRIPT[TIME].replicaData[$(this).data('replica')].recent))
-            .append($('<td />').text(SCRIPT[TIME].replicaData[$(this).data('replica')].n))
+            .append($('<td />').text(SCRIPT.data[TIME].replicaData[$(this).data('replica')].recent))
+            .append($('<td />').text(SCRIPT.data[TIME].replicaData[$(this).data('replica')].n))
           ).html();
 
         return table;
@@ -535,6 +761,20 @@ $(function() {
     TIME = (TIME+3)%4;
     $( "#step" ).slider('value', TIME);
     reload();
+  });
+
+  $('#example-case').live('change', function(event) {
+    if ($(this).val() == 'basic') {
+      TIME = 0;
+      $( "#step" ).slider('value', TIME);
+      SCRIPT = BASIC;
+      reload();
+    } else if ($(this).val() == 'acceptor-failure') {
+      TIME = 0;
+      $( "#step" ).slider('value', TIME);
+      SCRIPT = ACCEPTOR_FAILURE;
+      reload();
+    }
   });
 
   reload();
