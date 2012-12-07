@@ -100,3 +100,14 @@ td, th {
   border: none;
   outline: none;
 }
+
+.footer {
+  background: #aaa;
+  position: relative;
+  margin-top: -100px; /* negative value of footer height */
+  padding: 25px;
+  height: 100px;
+  clear:both;
+  padding-top:20px;
+  font-family: Copperplate, Copperplate Gothic Light, sans-serif;
+}
