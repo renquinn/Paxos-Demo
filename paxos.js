@@ -8,8 +8,358 @@ $(function() {
   var STEP_SPEED = 3000;
   var CONTINUOUS = false;
   var TIME = 0;
+  var MAX_TIME = 4;
   var PAUSE = true;
 
+  // Dueling proposers
+  var DUEL =
+  {
+    "title": "Dueling Proposers",
+    "data":
+    [
+      {
+        "phase": {
+          "type": "Prepare",
+          "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors'],
+          "proposer": 0
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "phase": {
+          "type": "Promise",
+          "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."],
+          "proposer": 0
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "phase": {
+          "type": "Prepare",
+          "description": ["Occasionally, multiple proposers might feel the need to propose a value at the same time.  This causes a conflict since a replica must only accept a single value per session.  The conflicted proposers then begin a duel to see who can gain the quorum's trust",
+                          "When a proposer receives a denial from a majority of acceptors, it must then propose the same value with a higher sequence number after sleeping for a brief period of time."],
+          "proposer": 1
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "phase": {
+          "type": "Promise",
+          "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."],
+          "proposer": 1
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "phase": {
+          "type": "Accept",
+          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."],
+          "proposer": 0
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "phase": {
+          "type": "Accepted",
+          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."],
+          "proposer": 0
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher",
+              "key": "value"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher",
+              "put key value"
+            ],
+            "recent": "put key value",
+            "value": "put key value",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+    ]
+  };
+var SCRIPT = BASIC;
+
+/*
+  var SCRIPT;
+  var scenario = 'normal.json';
+  $.ajax({
+    url: scenario,
+    type: 'GET',
+    async: false,
+    dataType: 'json',
+    error: function(data) {
+      console.log(data);
+      SCRIPT = data.responseText;
+      console.log(SCRIPT);
+    }
+  });
+
+  console.log(SCRIPT);
+  //$.getJSON(scenario, function(data) {
+    //SCRIPT = $.parseJSON(data);
+    //console.log(data);
+    //SCRIPT = data;
+  //});
+*/
+
+  /*
+   * PLUGINS
+   */
   // FAILURE OF AN ACCEPTOR
   var ACCEPTOR_FAILURE =
   {
@@ -19,7 +369,8 @@ $(function() {
       {
         "phase": {
           "type": "Prepare",
-          "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors']
+          "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors'],
+          "proposer": 0
         },
         "replicaData" : [
           {
@@ -71,7 +422,8 @@ $(function() {
           "type": "Promise",
           "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.",
                           " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N.",
-                          "The simplest error cases are the failure of a redundant Learner, or failure of an Acceptor when a Quorum of Acceptors remains live. In these cases, the protocol requires no recovery. No additional rounds or messages are required"]
+                          "The simplest error cases are the failure of a redundant Learner, or failure of an Acceptor when a Quorum of Acceptors remains live. In these cases, the protocol requires no recovery. No additional rounds or messages are required"],
+          "proposer": 0
         },
         "replicaData" : [
           {
@@ -121,7 +473,8 @@ $(function() {
       {
         "phase": {
           "type": "Accept",
-          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."]
+          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."],
+          "proposer": 0
         },
         "replicaData" : [
           {
@@ -171,7 +524,8 @@ $(function() {
       {
         "phase": {
           "type": "Accepted",
-          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."]
+          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."],
+          "proposer": 0
         },
         "replicaData" : [
           {
@@ -235,7 +589,8 @@ $(function() {
       {
         "phase": {
           "type": "Prepare",
-          "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors']
+          "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors'],
+          "proposer": 0
         },
         "replicaData" : [
           {
@@ -285,7 +640,8 @@ $(function() {
       {
         "phase": {
           "type": "Promise",
-          "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."]
+          "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."],
+          "proposer": 0
         },
         "replicaData" : [
           {
@@ -335,7 +691,8 @@ $(function() {
       {
         "phase": {
           "type": "Accept",
-          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."]
+          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."],
+          "proposer": 0
         },
         "replicaData" : [
           {
@@ -385,7 +742,8 @@ $(function() {
       {
         "phase": {
           "type": "Accepted",
-          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."]
+          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."],
+          "proposer": 0
         },
         "replicaData" : [
           {
@@ -508,7 +866,7 @@ var SCRIPT = BASIC;
    */
   var life = function() {
     if (!PAUSE) {
-      TIME = (TIME+1)%4;
+      TIME = (TIME+1)%MAX_TIME;
       $( "#step" ).slider('value', TIME);
       reload();
     };
@@ -521,14 +879,15 @@ var SCRIPT = BASIC;
   var animation = function() {
     if ($('#animate').is(':checked')) {
       var type = SCRIPT.data[TIME]['phase']['type'];
+      var proposer = SCRIPT.data[TIME].phase.proposer;
       if (type == "Prepare") {
-        propose(0);
+        propose(proposer);
       } else if (type == "Promise") {
-        promise(0);
+        promise(proposer);
       } else if (type == "Accept") {
-        accept(0);
+        accept(proposer);
       } else if (type == "Accepted") {
-        accepted(0);
+        accepted(proposer);
       }
     }
     setTimeout(function() {
@@ -733,6 +1092,20 @@ var SCRIPT = BASIC;
       }
         //template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title">TITLE!!!!</h3><div class="popover-content"><p>CONTENT!</p></div></div></div>'
     });
+
+    // Controlling the script via slider
+    $( "#step" ).slider({
+      animate: true,
+      value: TIME,
+      min: 0,
+      max: MAX_TIME - 1,
+      step: 1,
+      slide: function(event, ui) {
+        TIME = ui.value;
+        reload();
+      }
+    });
+
   };
 
   /*
@@ -752,27 +1125,35 @@ var SCRIPT = BASIC;
   });
 
   $('.next-step').click(function(event) {
-    TIME = (TIME+1)%4;
+    TIME = (TIME+1)%MAX_TIME;
     $( "#step" ).slider('value', TIME);
     reload();
   });
 
   $('.previous-step').click(function(event) {
-    TIME = (TIME+3)%4;
+    TIME = (TIME+3)%MAX_TIME;
     $( "#step" ).slider('value', TIME);
     reload();
   });
 
   $('#example-case').live('change', function(event) {
     if ($(this).val() == 'basic') {
+      SCRIPT = BASIC;
+      MAX_TIME = SCRIPT.data.length;
       TIME = 0;
       $( "#step" ).slider('value', TIME);
-      SCRIPT = BASIC;
       reload();
     } else if ($(this).val() == 'acceptor-failure') {
+      SCRIPT = ACCEPTOR_FAILURE;
+      MAX_TIME = SCRIPT.data.length;
       TIME = 0;
       $( "#step" ).slider('value', TIME);
-      SCRIPT = ACCEPTOR_FAILURE;
+      reload();
+    } else if ($(this).val() == 'duel') {
+      SCRIPT = DUEL;
+      MAX_TIME = SCRIPT.data.length;
+      TIME = 0;
+      $( "#step" ).slider('value', TIME);
       reload();
     }
   });
