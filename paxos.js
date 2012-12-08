@@ -1,3 +1,5 @@
+// TODO: Use a proposal N per phase in addition to a stored N per replica per phase
+// TODO: Update descriptions on dueling case
 $(function() {
   /*
    * GLOBALS
@@ -226,7 +228,7 @@ $(function() {
         ]
       },
       {
-        // Meanwhile, Proposer 1 attempts to get its value accepted
+        // Meanwhile, Proposer 0 attempts to get its value accepted
         "phase": {
           "type": "Accept",
           "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."],
@@ -430,6 +432,342 @@ $(function() {
             "value": "",
             "status": "success",
             "n": 3
+          }
+        ]
+      },
+      {
+        // Meanwhile, Proposer 1 attempts to get its value accepted
+        "phase": {
+          "type": "Accept",
+          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."],
+          "proposer": 1
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x2F9D602E sirius",
+            "status": "success",
+            "n": 3
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x2F9D602E sirius",
+            "status": "success",
+            "n": 2
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
+            "status": "success",
+            "n": 3
+          }
+        ]
+      },
+      {
+        // The acceptors reject Proposer 0's attempt for acceptance because they have now promised a higher n (that of proposer 1)
+        "phase": {
+          "type": "Accepted",
+          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."],
+          "proposer": 1
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
+            "status": "error",
+            "n": 3
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
+            "status": "error",
+            "n": 3
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
+            "status": "error",
+            "n": 3
+          }
+        ]
+      },
+      {
+        // Meanwhile, Proposer 0 attempts to get its value accepted again
+        "phase": {
+          "type": "Accept",
+          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."],
+          "proposer": 0
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
+            "status": "success",
+            "n": 3
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
+            "status": "success",
+            "n": 3
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
+            ],
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
+            "status": "success",
+            "n": 3
+          }
+        ]
+      },
+      {
+        // This time the acceptors accept Proposer 0's attempt for acceptance
+        "phase": {
+          "type": "Accepted",
+          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."],
+          "proposer": 0
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol"
+            ],
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x7363682E algol",
+            "status": "success",
+            "n": 3
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol"
+            ],
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x7363682E algol",
+            "status": "success",
+            "n": 3
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol"
+            ],
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x7363682E algol",
+            "status": "success",
+            "n": 3
+          }
+        ]
+      },
+      {
+        // Meanwhile, Proposer 1 attempts to get its value accepted
+        "phase": {
+          "type": "Accept",
+          "description": ["If a Proposer receives enough promises from a Quorum of Acceptors, it needs to set a value to its proposal. If any Acceptors had previously accepted any proposal, then they'll have sent their values to the Proposer, who now must set the value of its proposal to the value associated with the highest proposal number reported by the Acceptors. If none of the Acceptors had accepted a proposal up to this point, then the Proposer may choose any value for its proposal.", "The Proposer sends an Accept Request message to a Quorum of Acceptors with the chosen value for its proposal."],
+          "proposer": 1
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol"
+            ],
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x2F9D602E sirius",
+            "status": "success",
+            "n": 3
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol"
+            ],
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x2F9D602E sirius",
+            "status": "success",
+            "n": 4
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol"
+            ],
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x7363682E algol",
+            "status": "success",
+            "n": 3
+          }
+        ]
+      },
+      {
+        // The acceptors accept Proposer 1's attempt for acceptance
+        "phase": {
+          "type": "Accepted",
+          "description": ["If an Acceptor receives an Accept Request message for a proposal N, it must accept it if and only if it has not already promised to only consider proposals having an identifier greater than N. In this case, it should register the corresponding value v and send an Accepted message to the Proposer and every Learner. Else, it can ignore the Accept Request."],
+          "proposer": 1
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol",
+              "0x2F9D602E": " sirius"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol",
+              "put 0x2F9D602E sirius"
+            ],
+            "recent": "put 0x2F9D602E sirius",
+            "value": "put 0x2F9D602E sirius",
+            "status": "success",
+            "n": 4
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol",
+              "0x2F9D602E": " sirius"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol",
+              "put 0x2F9D602E sirius"
+            ],
+            "recent": "put 0x2F9D602E sirius",
+            "value": "put 0x2F9D602E sirius",
+            "status": "success",
+            "n": 4
+          },
+          {
+            "database": {
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": " algol",
+              "0x2F9D602E": " sirius"
+            },
+            "slots": [
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol",
+              "put 0x2F9D602E sirius"
+            ],
+            "recent": "put 0x2F9D602E sirius",
+            "value": "put 0x2F9D602E sirius",
+            "status": "success",
+            "n": 4
           }
         ]
       },
