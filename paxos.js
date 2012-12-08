@@ -18,6 +18,7 @@ $(function() {
     "data":
     [
       {
+        // Proposer 0 proposes its value
         "phase": {
           "type": "Prepare",
           "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors'],
@@ -69,6 +70,7 @@ $(function() {
         ]
       },
       {
+        // The acceptors accept proposer 0's proposal
         "phase": {
           "type": "Promise",
           "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."],
@@ -120,6 +122,7 @@ $(function() {
         ]
       },
       {
+        // Proposer 1 proposes a different value
         "phase": {
           "type": "Prepare",
           "description": ["Occasionally, multiple proposers might feel the need to propose a value at the same time.  This causes a conflict since a replica must only accept a single value per session.  The conflicted proposers then begin a duel to see who can gain the quorum's trust",
@@ -595,42 +598,42 @@ var SCRIPT = BASIC;
         "replicaData" : [
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
-            "value": "put key value",
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
             "status": "success",
             "n": 1
           },
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
+            "recent": "put 0x6339392C gopher",
             "value": "",
             "status": "success",
             "n": 1
           },
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
+            "recent": "put 0x6339392C gopher",
             "value": "",
             "status": "success",
             "n": 1
@@ -646,42 +649,42 @@ var SCRIPT = BASIC;
         "replicaData" : [
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
+            "recent": "put 0x6339392C gopher",
             "value": "",
             "status": "success",
             "n": 1
           },
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
+            "recent": "put 0x6339392C gopher",
             "value": "",
             "status": "success",
             "n": 1
           },
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
+            "recent": "put 0x6339392C gopher",
             "value": "",
             "status": "success",
             "n": 1
@@ -697,43 +700,43 @@ var SCRIPT = BASIC;
         "replicaData" : [
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
-            "value": "put key value",
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
             "status": "success",
             "n": 1
           },
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
-            "value": "put key value",
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
             "status": "success",
             "n": 1
           },
           {
             "database": {
-              "a": "b",
-              "go": "gopher"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher"
             },
             "slots": [
-              "put a b",
-              "put go gopher"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher"
             ],
-            "recent": "put go gopher",
-            "value": "put key value",
+            "recent": "put 0x6339392C gopher",
+            "value": "put 0x7363682E algol",
             "status": "success",
             "n": 1
           }
@@ -748,49 +751,49 @@ var SCRIPT = BASIC;
         "replicaData" : [
           {
             "database": {
-              "a": "b",
-              "go": "gopher",
-              "key": "value"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": "algol"
             },
             "slots": [
-              "put a b",
-              "put go gopher",
-              "put key value"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol"
             ],
-            "recent": "put key value",
-            "value": "put key value",
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x7363682E algol",
             "status": "success",
             "n": 1
           },
           {
             "database": {
-              "a": "b",
-              "go": "gopher",
-              "key": "value"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": "algol"
             },
             "slots": [
-              "put a b",
-              "put go gopher",
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
               "put key value"
             ],
-            "recent": "put key value",
-            "value": "put key value",
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x7363682E algol",
             "status": "success",
             "n": 1
           },
           {
             "database": {
-              "a": "b",
-              "go": "gopher",
-              "key": "value"
+              "0x3A28213A": "lamport",
+              "0x6339392C": "gopher",
+              "0x7363682E": "algol"
             },
             "slots": [
-              "put a b",
-              "put go gopher",
-              "put key value"
+              "put 0x3A28213A lamport",
+              "put 0x6339392C gopher",
+              "put 0x7363682E algol"
             ],
-            "recent": "put key value",
-            "value": "put key value",
+            "recent": "put 0x7363682E algol",
+            "value": "put 0x7363682E algol",
             "status": "success",
             "n": 1
           }

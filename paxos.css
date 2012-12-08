@@ -55,6 +55,8 @@ label {
 .message p.value {
   background: #fff;
   margin-top: 20px;
+  margin-left: -10px;
+  width: 125px;
   line-height: 1em;
 	font-size: .5em;
   color: #000;
