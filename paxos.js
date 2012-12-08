@@ -1570,9 +1570,9 @@ var SCRIPT = BASIC;
   $('.play-pause').click(function(event) {
     PAUSE = !PAUSE;
     if (PAUSE) {
-      $('.play-pause').text('Play');
+      $('.play-pause').html('<i class="icon-play icon-white"></i>Play');
     } else {
-      $('.play-pause').text('Pause');
+      $('.play-pause').html('<i class="icon-pause icon-white"></i>Pause');
     }
   });
 
