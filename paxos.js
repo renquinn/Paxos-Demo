@@ -138,7 +138,7 @@ $(function() {
             ],
             "recent": "put go gopher",
             "value": "",
-            "status": "success",
+            "status": "error",
             "n": 1
           },
           {
@@ -152,57 +152,6 @@ $(function() {
             ],
             "recent": "put go gopher",
             "value": "put key value",
-            "status": "success",
-            "n": 1
-          },
-          {
-            "database": {
-              "a": "b",
-              "go": "gopher"
-            },
-            "slots": [
-              "put a b",
-              "put go gopher"
-            ],
-            "recent": "put go gopher",
-            "value": "",
-            "status": "success",
-            "n": 1
-          }
-        ]
-      },
-      {
-        "phase": {
-          "type": "Promise",
-          "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."],
-          "proposer": 1
-        },
-        "replicaData" : [
-          {
-            "database": {
-              "a": "b",
-              "go": "gopher"
-            },
-            "slots": [
-              "put a b",
-              "put go gopher"
-            ],
-            "recent": "put go gopher",
-            "value": "",
-            "status": "success",
-            "n": 1
-          },
-          {
-            "database": {
-              "a": "b",
-              "go": "gopher"
-            },
-            "slots": [
-              "put a b",
-              "put go gopher"
-            ],
-            "recent": "put go gopher",
-            "value": "",
             "status": "success",
             "n": 1
           },
@@ -268,6 +217,57 @@ $(function() {
             ],
             "recent": "put go gopher",
             "value": "put key value",
+            "status": "success",
+            "n": 1
+          }
+        ]
+      },
+      {
+        "phase": {
+          "type": "Promise",
+          "description": ["If the proposal's number N is higher than any previous proposal number received from any Proposer by the Acceptor, then the Acceptor must return a promise to ignore all future proposals having a number less than N. If the Acceptor accepted a proposal at some point in the past, it must include the previous proposal number and previous value in its response to the Proposer.", " Otherwise, the Acceptor can ignore the received proposal. It does not have to answer in this case for Paxos to work. However, for the sake of optimization, sending a denial (Nack) response would tell the Proposer that it can stop its attempt to create consensus with proposal N."],
+          "proposer": 1
+        },
+        "replicaData" : [
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
+            "status": "success",
+            "n": 1
+          },
+          {
+            "database": {
+              "a": "b",
+              "go": "gopher"
+            },
+            "slots": [
+              "put a b",
+              "put go gopher"
+            ],
+            "recent": "put go gopher",
+            "value": "",
             "status": "success",
             "n": 1
           }
@@ -1122,6 +1122,11 @@ var SCRIPT = BASIC;
 
   $('.play-pause').click(function(event) {
     PAUSE = !PAUSE;
+    if (PAUSE) {
+      $('.play-pause').text('Play');
+    } else {
+      $('.play-pause').text('Pause');
+    }
   });
 
   $('.next-step').click(function(event) {
