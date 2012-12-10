@@ -5,7 +5,7 @@
     {
       "phase": {
         "type": "Prepare",
-        "description": ['A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors'],
+        "description": ["A Proposer creates a proposal identified with a number N. This number must be greater than any previous proposal number used by this Proposer. Then, it sends a Prepare message containing this proposal to a Quorum of Acceptors"],
         "proposer": 0,
         "proposal": 1
       },
@@ -217,7 +217,7 @@
           "n": 1
         }
       ]
-    },
+    }
   ]
 }
 
