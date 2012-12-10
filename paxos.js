@@ -904,32 +904,6 @@ $(function() {
     ]
   };
 
-/*
-  var SCRIPT;
-  var scenario = 'normal.json';
-  $.ajax({
-    url: scenario,
-    type: 'GET',
-    async: false,
-    dataType: 'json',
-    error: function(data) {
-      console.log(data);
-      SCRIPT = data.responseText;
-      console.log(SCRIPT);
-    }
-  });
-
-  console.log(SCRIPT);
-  //$.getJSON(scenario, function(data) {
-    //SCRIPT = $.parseJSON(data);
-    //console.log(data);
-    //SCRIPT = data;
-  //});
-*/
-
-  /*
-   * PLUGINS
-   */
   // FAILURE OF AN ACCEPTOR
   var ACCEPTOR_FAILURE =
   {
@@ -1376,7 +1350,11 @@ $(function() {
       },
     ]
   };
-var SCRIPT = BASIC;
+//var SCRIPT = BASIC; //TODO: Test JSON
+$.getJSON("basic.json", function(data) {
+  SCRIPT = $.parseJSON(data);
+  SCRIPT = data;
+});
 
 /*
   var SCRIPT;
@@ -1500,7 +1478,6 @@ var SCRIPT = BASIC;
           $(this).remove();
         });
     });
-    //console.log("Replica " + replica + " has proposed the value " + command + ".");
   };
 
   var promise = function(replica) {
@@ -1566,7 +1543,6 @@ var SCRIPT = BASIC;
           $(this).remove();
         });
     });
-    //console.log("Replica " + replica + " has proposed the value " + command + ".");
   };
 
   var accepted = function(replica) {
@@ -1723,25 +1699,25 @@ var SCRIPT = BASIC;
   });
 
   $('#example-case').live('change', function(event) {
+    /*
     if ($(this).val() == 'basic') {
       SCRIPT = BASIC;
-      MAX_TIME = SCRIPT.data.length;
-      TIME = 0;
-      $( "#step" ).slider('value', TIME);
-      reload();
-    } else if ($(this).val() == 'acceptor-failure') {
+    } else if ($(this).val() == 'acceptor_failure') {
       SCRIPT = ACCEPTOR_FAILURE;
-      MAX_TIME = SCRIPT.data.length;
-      TIME = 0;
-      $( "#step" ).slider('value', TIME);
-      reload();
     } else if ($(this).val() == 'duel') {
       SCRIPT = DUEL;
-      MAX_TIME = SCRIPT.data.length;
-      TIME = 0;
-      $( "#step" ).slider('value', TIME);
-      reload();
     }
+    */
+    var scenario = $(this).val() + '.json';
+    $.getJSON(scenario, function(data) {
+      SCRIPT = $.parseJSON(data);
+      SCRIPT = data;
+    });
+
+    MAX_TIME = SCRIPT.data.length;
+    TIME = 0;
+    $( "#step" ).slider('value', TIME);
+    reload();
   });
 
   reload();
